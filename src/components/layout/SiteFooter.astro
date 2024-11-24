@@ -1,8 +1,8 @@
 ---
 import { Icon } from 'astro-icon/components';
 import ExternalLink from '~/components/ui/ExternalLink.astro';
-import SocialIconLink from './SocialIconLink.astro';
 import { simpleDateNow } from '~/lib/util.ts';
+import SocialIconLink from './SocialIconLink.astro';
 
 export interface Props {
 	class?: string;
@@ -86,7 +86,7 @@ const buildDate = simpleDateNow();
 				Astro.props.additionalInfoTags && (
 					<span>
 						{` | `}
-						<span class="has-tooltip underline">
+						<span class="has-tooltip cursor-pointer underline">
 							<span class="tooltip -mt-72 max-w-lg rounded bg-gray-950 p-2 text-[0.85em] text-gray-300">
 								<span class="flex flex-col gap-1.5">
 									{Astro.props.additionalInfoTags.map((tagValue) => {

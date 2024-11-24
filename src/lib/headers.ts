@@ -1,4 +1,4 @@
-import { ONE_DAY } from '../config.ts';
+import { ONE_DAY, ONE_HOUR } from '../config.ts';
 
 const DISABLE_CDN_CACHE = import.meta.env.DISABLE_CDN_CACHE?.toLowerCase() === 'true';
 
@@ -15,7 +15,7 @@ export function applyCacheHeaders(headers: Headers, options?: { cacheTags?: Cach
 	if (!DISABLE_CDN_CACHE) {
 		// 1 day cache, allow up to 5 minutes until next request to revalidate.
 		cacheHeaders['cdn-cache-control'] =
-			`public,durable,s-maxage=${ONE_DAY},stale-while-revalidate=${60 * 5}`;
+			`public,durable,s-maxage=${ONE_DAY},stale-while-revalidate=${ONE_HOUR}`;
 
 		if (options?.cacheTags) {
 			const tagsHeaderValue = CacheTags.toHeaderValue(options.cacheTags);
@@ -25,23 +25,22 @@ export function applyCacheHeaders(headers: Headers, options?: { cacheTags?: Cach
 		}
 	}
 
-	Object.entries(cacheHeaders).forEach(([key, value]) => {
+	for (const [key, value] of Object.entries(cacheHeaders)) {
 		headers.append(key, value);
-	});
+	}
 }
 
-export class CacheTags {
-	static forProduct(productId: string) {
+export const CacheTags = {
+	forProduct(productId: string) {
 		return `pid_${productId}`;
-	}
-	static forCollection(collectionId: string) {
+	},
+	forCollection(collectionId: string) {
 		return `cid_${collectionId}`;
-	}
-	static forCollectionsMetadata() {
+	},
+	forCollectionsMetadata() {
 		return 'collections_metadata';
-	}
-
-	static toValues(options: CacheTagOptions): string[] {
+	},
+	toValues(options: CacheTagOptions): string[] {
 		let values: string[] = [];
 		if (options.productIds?.length) {
 			values = values.concat(options.productIds.map((id) => this.forProduct(id)));
@@ -53,10 +52,9 @@ export class CacheTags {
 			values.push(this.forCollectionsMetadata());
 		}
 		return values;
-	}
-
-	static toHeaderValue(options: CacheTagOptions): string | null {
+	},
+	toHeaderValue(options: CacheTagOptions): string | null {
 		const values = this.toValues(options);
 		return values.length > 0 ? values.join(',') : null;
-	}
-}
+	},
+};
