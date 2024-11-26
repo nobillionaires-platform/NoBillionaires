@@ -16,16 +16,17 @@ export default async (req: Request) => {
 	const jwtSecret = process.env.JWT_SECRET;
 	if (!jwtSecret) {
 		console.log('No JWT_SECRET set, exiting.');
+		return;
 	}
 
-	const token = makeToken(jwtSecret!);
+	const token = makeToken(jwtSecret);
 	const response = await fetch(`${host}/api/revalidate`, {
 		method: 'POST',
 		headers: {
 			Authorization: `Bearer ${token}`,
 		},
 	});
-	if (response.status != 200) {
+	if (response.status !== 200) {
 		console.error(`Failed with code ${response.status}: ${response.statusText}`);
 	} else {
 		console.log('Response:', await response.json());
